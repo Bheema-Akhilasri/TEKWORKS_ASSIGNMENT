@@ -1,0 +1,473 @@
+SQL> create table cvr(sno int,sname varchar2(40),marks number,city varchar2(40),mobile number,gender varchar2(20));
+
+Table created.
+
+SQL> insert into cvr values(101,'John',68,'Pune',9763546345,'male');
+
+1 row created.
+
+SQL> insert into cvr values(102,'Milky',76,'Hyderabad',9763578965,'female');
+
+1 row created.
+
+SQL> insert into cvr values(103,'Apoorva',89,'Kothakota',9345678965,'female');
+
+1 row created.
+
+SQL> insert into cvr values(104,'Jack',87,'Delhi',9435687643,'male');
+
+1 row created.
+
+SQL> insert into cvr values(105,'sita',75,'Delhi',9876554326,'female');
+
+1 row created.
+
+SQL> insert into cvr values(106,'sitara',98,'Mumbai',9178254398,'female');
+
+1 row created.
+
+SQL> insert into cvr values(107,'lucas',79,'Goa',9648953687,'male');
+
+1 row created.
+
+SQL> insert into cvr values(108,'steve',65,'panaji',9768943267,'male');
+
+1 row created.
+
+SQL> insert into cvr values(109,'suzie',86,'Ahmedabad',9654789054,'female');
+
+1 row created.
+
+SQL> insert into cvr values(110,'hatori',70,'Bhopal',9654798765,'male');
+
+1 row created.
+
+SQL> insert into cvr values(111,'shizuka',84,'Bhopal',8976356754,'female');
+
+1 row created.
+
+SQL> insert into cvr values(112,'lily',80,'Mumbai',7893654678,'female');
+
+1 row created.
+
+SQL> select * from cvr where city='Pune';
+
+       SNO SNAME                                         MARKS
+---------- ---------------------------------------- ----------
+CITY                                         MOBILE GENDER
+---------------------------------------- ---------- --------------------
+       101 John                                             68
+Pune                                     9763546345 male
+
+
+SQL> select * from cvr where city='Pune' or city='Bhopal';
+
+       SNO SNAME                                         MARKS
+---------- ---------------------------------------- ----------
+CITY                                         MOBILE GENDER
+---------------------------------------- ---------- --------------------
+       101 John                                             68
+Pune                                     9763546345 male
+
+       110 hatori                                           70
+Bhopal                                   9654798765 male
+
+       111 shizuka                                          84
+Bhopal                                   8976356754 female
+
+SQL> set line 250;
+SQL> select * from cvr where city='Pune' or city='Bhopal';
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       101 John                                             68 Pune                                     9763546345 male
+       110 hatori                                           70 Bhopal                                   9654798765 male
+       111 shizuka                                          84 Bhopal                                   8976356754 female
+
+SQL> select * from cvr where (gender='female' and city='Hyderabad') or (gender='male' and city='Delhi') or city='Mumbai';
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       102 Milky                                            76 Hyderabad                                9763578965 female
+       104 Jack                                             87 Delhi                                    9435687643 male
+       106 sitara                                           98 Mumbai                                   9178254398 female
+       112 lily                                             80 Mumbai                                   7893654678 female
+
+SQL> select * from cvr where city='Delhi' and ((gender='male' and marks>70) or (gender='female' and marks>50));
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       104 Jack                                             87 Delhi                                    9435687643 male
+       105 sita                                             75 Delhi                                    9876554326 female
+
+SQL> insert into cvr values(113,'shila',40,'Bhopal',8976356754,'female');
+
+1 row created.
+
+SQL> select * from cvr where city='Delhi' and ((gender='male' and marks>70) or (gender='female' and marks>50));
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       104 Jack                                             87 Delhi                                    9435687643 male
+       105 sita                                             75 Delhi                                    9876554326 female
+
+SQL> select * from cvr where city='Bhopal' and gender='male';
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       110 hatori                                           70 Bhopal                                   9654798765 male
+
+
+SQL> select * from cvr where marks between 50 and 80 and (city='Mumbai' or city='Bhopal');
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       110 hatori                                           70 Bhopal                                   9654798765 male
+       112 lily                                             80 Mumbai                                   7893654678 female
+
+SQL> select * from cvr where marks between 50 and 90 and (city='Mumbai' or city='Bhopal');
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       110 hatori                                           70 Bhopal                                   9654798765 male
+       111 shizuka                                          84 Bhopal                                   8976356754 female
+       112 lily                                             80 Mumbai                                   7893654678 female
+
+SQL> select * from cvr where sname like 's%a';
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       105 sita                                             75 Delhi                                    9876554326 female
+       106 sitara                                           98 Mumbai                                   9178254398 female
+       111 shizuka                                          84 Bhopal                                   8976356754 female
+       113 shila                                            40 Bhopal                                   8976356754 female
+
+SQL> select count(*) from cvr group by city;
+
+  COUNT(*)
+----------
+         1
+         3
+         1
+         2
+         2
+         1
+         1
+         1
+         1
+
+9 rows selected.
+
+SQL> select count(*),city from cvr group by city;
+
+  COUNT(*) CITY
+---------- ----------------------------------------
+         1 panaji
+         3 Bhopal
+         1 Ahmedabad
+         2 Delhi
+         2 Mumbai
+         1 Goa
+         1 Hyderabad
+         1 Pune
+         1 Kothakota
+
+9 rows selected.
+
+SQL> select city from cvr where marks=(select max(marks) from cvr);
+
+CITY
+----------------------------------------
+Mumbai
+
+SQL> select max(marks) from cvr group by city;
+
+MAX(MARKS)
+----------
+        65
+        84
+        86
+        87
+        98
+        79
+        76
+        68
+        89
+
+9 rows selected.
+
+SQL> select max(marks) as Top_score,city from cvr group by city;
+
+ TOP_SCORE CITY
+---------- ----------------------------------------
+        65 panaji
+        84 Bhopal
+        86 Ahmedabad
+        87 Delhi
+        98 Mumbai
+        79 Goa
+        76 Hyderabad
+        68 Pune
+        89 Kothakota
+
+9 rows selected.
+
+SQL> select * from cvr where marks=(select max(marks) from cvr) and city='Bhopal';
+
+no rows selected
+
+SQL> select * from cvr where marks=(select max(marks) from cvr where city='Bhopal');
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       111 shizuka                                          84 Bhopal                                   8976356754 female
+
+SQL> select * from cvr where marks=(select max(marks) from cvr where city='Mumbai');
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       106 sitara                                           98 Mumbai                                   9178254398 female
+
+SQL> select * from cvr;
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       101 John                                             68 Pune                                     9763546345 male
+       102 Milky                                            76 Hyderabad                                9763578965 female
+       103 Apoorva                                          89 Kothakota                                9345678965 female
+       104 Jack                                             87 Delhi                                    9435687643 male
+       105 sita                                             75 Delhi                                    9876554326 female
+       106 sitara                                           98 Mumbai                                   9178254398 female
+       107 lucas                                            79 Goa                                      9648953687 male
+       108 steve                                            65 panaji                                   9768943267 male
+       109 suzie                                            86 Ahmedabad                                9654789054 female
+       110 hatori                                           70 Bhopal                                   9654798765 male
+       111 shizuka                                          84 Bhopal                                   8976356754 female
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       112 lily                                             80 Mumbai                                   7893654678 female
+       113 shila                                            40 Bhopal                                   8976356754 female
+
+13 rows selected.
+
+SQL> select * from cvr where marks=(select max(marks) from cvr where city='Mumbai') and city='Mumbai';
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       106 sitara                                           98 Mumbai                                   9178254398 female
+
+SQL> rename cvr to student;
+
+Table renamed.
+
+SQL> select * from student;
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       101 John                                             68 Pune                                     9763546345 male
+       102 Milky                                            76 Hyderabad                                9763578965 female
+       103 Apoorva                                          89 Kothakota                                9345678965 female
+       104 Jack                                             87 Delhi                                    9435687643 male
+       105 sita                                             75 Delhi                                    9876554326 female
+       106 sitara                                           98 Mumbai                                   9178254398 female
+       107 lucas                                            79 Goa                                      9648953687 male
+       108 steve                                            65 panaji                                   9768943267 male
+       109 suzie                                            86 Ahmedabad                                9654789054 female
+       110 hatori                                           70 Bhopal                                   9654798765 male
+       111 shizuka                                          84 Bhopal                                   8976356754 female
+
+       SNO SNAME                                         MARKS CITY                                         MOBILE GENDER
+---------- ---------------------------------------- ---------- ---------------------------------------- ---------- --------------------
+       112 lily                                             80 Mumbai                                   7893654678 female
+       113 shila                                            40 Bhopal                                   8976356754 female
+
+13 rows selected.
+
+SQL> SELECT city, avg_score
+  2  FROM (
+  3    SELECT city, AVG(marks) AS avg_score
+  4    FROM student
+  5    GROUP BY city
+  6    ORDER BY avg_score DESC
+  7  )
+  8  WHERE ROWNUM = 1;
+
+CITY                                      AVG_SCORE
+---------------------------------------- ----------
+Mumbai                                           89
+
+SQL> create table salespeople(snum int not null,sname varchar2(30) not null,city varchar2(30) not null,comm decimal(4,2) not null,primary key(snum));
+
+Table created.
+
+SQL> insert into salespeople values(1001,'Peel','London',0.12);
+
+1 row created.
+
+SQL> insert into salespeople values(1002,'Serres','San Jose',0.13);
+
+1 row created.
+
+SQL> insert into salespeople values(1003,'AxelRod','New York',0.10);
+
+1 row created.
+
+SQL> insert into salespeople values(1004,'Motika','London',0.11);
+
+1 row created.
+
+SQL> insert into salespeople values(1005,'Fran','London',0.26);
+
+1 row created.
+
+SQL> insert into salespeople values(1006,'Rifkin','Barcelona',0.15);
+
+1 row created.
+
+SQL> select * from salespeople;
+
+      SNUM SNAME                          CITY                                 COMM
+---------- ------------------------------ ------------------------------ ----------
+      1001 Peel                           London                                .12
+      1002 Serres                         San Jose                              .13
+      1003 AxelRod                        New York                               .1
+      1004 Motika                         London                                .11
+      1005 Fran                           London                                .26
+      1006 Rifkin                         Barcelona                             .15
+
+6 rows selected.
+
+SQL> create table customer(cnum int not null,cname varchar2(30) not null,city varchar2(30) not null,rating int not null,snum int not null,primary key(cnum),foreign key(snum) references salespeople(snum));
+
+Table created.
+
+SQL> insert into customer values(2001,'Hoffman','London',100,1001);
+
+1 row created.
+
+SQL> insert into customer values(2002,'Giovanni','Rome',200,1003);
+
+1 row created.
+
+SQL> insert into customer values(2003,'Liu','San Jose',200,1002);
+
+1 row created.
+
+SQL> insert into customer values(2004,'Grass','Berlin',300,1002);
+
+1 row created.
+
+SQL> insert into customer values(2006,'Clemens','London',100,1001);
+
+1 row created.
+
+SQL> insert into customer values(2008,'Cisneros','San Jose',300,1006);
+
+1 row created.
+
+SQL> insert into customer values(2007,'Pereira','Rome',100,1004);
+
+1 row created.
+
+SQL> select count(s.sname),s.sname from salespeople s,customer c where s.snum=c.snum group by s.sname;
+
+COUNT(S.SNAME) SNAME
+-------------- ------------------------------
+             2 Peel
+             1 Motika
+             2 Serres
+             1 AxelRod
+             1 Rifkin
+
+SQL> select * from salespeople;
+
+      SNUM SNAME                          CITY                                 COMM
+---------- ------------------------------ ------------------------------ ----------
+      1001 Peel                           London                                .12
+      1002 Serres                         San Jose                              .13
+      1003 AxelRod                        New York                               .1
+      1004 Motika                         London                                .11
+      1005 Fran                           London                                .26
+      1006 Rifkin                         Barcelona                             .15
+
+6 rows selected.
+
+SQL> select * from customer;
+
+      CNUM CNAME                          CITY                               RATING       SNUM
+---------- ------------------------------ ------------------------------ ---------- ----------
+      2001 Hoffman                        London                                100       1001
+      2002 Giovanni                       Rome                                  200       1003
+      2003 Liu                            San Jose                              200       1002
+      2004 Grass                          Berlin                                300       1002
+      2006 Clemens                        London                                100       1001
+      2008 Cisneros                       San Jose                              300       1006
+      2007 Pereira                        Rome                                  100       1004
+
+7 rows selected.
+
+SQL> select s.sname,avg(rating) as avg_rating from salespeople s,customer c group by s.sname;
+
+SNAME                          AVG_RATING
+------------------------------ ----------
+Peel                           185.714286
+Motika                         185.714286
+Serres                         185.714286
+Fran                           185.714286
+AxelRod                        185.714286
+Rifkin                         185.714286
+
+6 rows selected.
+
+
+SQL> select s.sname,avg(c.rating) as avg_rating from salespeople s,customer c group by s.sname;
+
+SNAME                          AVG_RATING
+------------------------------ ----------
+Peel                           185.714286
+Motika                         185.714286
+Serres                         185.714286
+Fran                           185.714286
+AxelRod                        185.714286
+Rifkin                         185.714286
+
+6 rows selected.
+
+SQL> select s.sname,avg(c.rating) as avg_rating from salespeople s,customer c where s.snum=c.snum group by s.sname;
+
+SNAME                          AVG_RATING
+------------------------------ ----------
+Peel                                  100
+Motika                                100
+Serres                                250
+AxelRod                               200
+Rifkin                                300
+
+SQL> SELECT sname, avg_rating
+  2  FROM (
+  3    SELECT s.sname, AVG(c.rating) AS avg_rating
+  4    FROM salespeople s
+  5    JOIN customer c ON s.snum = c.snum
+  6    GROUP BY s.sname
+  7    ORDER BY avg_rating DESC
+  8  )
+  9  WHERE ROWNUM = 1;
+
+SNAME                          AVG_RATING
+------------------------------ ----------
+Rifkin                                300
+
+SQL> SELECT sname, avg_rating
+  2  FROM (
+  3    SELECT s.sname, AVG(c.rating) AS avg_rating
+  4    FROM salespeople s
+  5    JOIN customer c ON s.snum = c.snum
+  6    GROUP BY s.sname
+  7    ORDER BY avg_rating asc
+  8  )
+  9  WHERE ROWNUM = 1;
+
+SNAME                          AVG_RATING
+------------------------------ ----------
+Peel                                  100

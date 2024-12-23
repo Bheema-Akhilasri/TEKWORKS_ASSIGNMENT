@@ -1,0 +1,305 @@
+SQL> CREATE TABLE orders (
+  2           onum    INT  NOT NULL,
+  3      amt  DECIMAL(7,2)  NOT NULL,
+  4           odate  Date   NOT NULL,
+  5   cnum  int  NOT NULL,
+  6           PRIMARY KEY  (onum),
+  7       FOREIGN KEY (cnum) REFERENCES customer(cnum)
+  8         );
+
+Table created.
+
+
+SQL> INSERT INTO orders VALUES (3001, 18.69, TO_DATE('1996-03-10', 'YYYY-MM-DD'), 2008);
+
+1 row created.
+
+SQL> INSERT INTO orders VALUES (3003, 767.19, TO_DATE('1996-10-03', 'YYYY-MM-DD'), 2001);
+
+1 row created.
+
+SQL> INSERT INTO orders VALUES (3002, 1900.10, TO_DATE('1996-10-03', 'YYYY-MM-DD'), 2007);
+
+1 row created.
+
+SQL> INSERT INTO orders VALUES (3005, 5160.45, TO_DATE('1996-10-03', 'YYYY-MM-DD'), 2003);
+
+1 row created.
+
+SQL> INSERT INTO orders VALUES (3006, 1098.16, TO_DATE('1996-10-03', 'YYYY-MM-DD'), 2008);
+
+1 row created.
+
+SQL> INSERT INTO orders VALUES (3009, 1713.23, TO_DATE('1996-10-04', 'YYYY-MM-DD'), 2002);
+
+1 row created.
+
+SQL> INSERT INTO orders VALUES (3007, 75.75, TO_DATE('1996-10-04', 'YYYY-MM-DD'), 2002);
+
+1 row created.
+
+SQL> INSERT INTO orders VALUES (3008, 4723.00, TO_DATE('1996-10-05', 'YYYY-MM-DD'), 2006);
+
+1 row created.
+
+SQL> INSERT INTO orders VALUES (3010, 1309.95, TO_DATE('1996-10-06', 'YYYY-MM-DD'), 2004);
+
+1 row created.
+
+SQL> INSERT INTO orders VALUES (3011, 9891.88, TO_DATE('1996-10-06', 'YYYY-MM-DD'), 2006);
+
+1 row created.
+
+SQL> setline 250;
+SP2-0734: unknown command beginning "setline 25..." - rest of line ignored.
+SQL> set line 250;
+SQL> select * from orders;
+
+      ONUM        AMT ODATE           CNUM
+---------- ---------- --------- ----------
+      3001      18.69 10-MAR-96       2008
+      3003     767.19 03-OCT-96       2001
+      3002     1900.1 03-OCT-96       2007
+      3005    5160.45 03-OCT-96       2003
+      3006    1098.16 03-OCT-96       2008
+      3009    1713.23 04-OCT-96       2002
+      3007      75.75 04-OCT-96       2002
+      3008       4723 05-OCT-96       2006
+      3010    1309.95 06-OCT-96       2004
+      3011    9891.88 06-OCT-96       2006
+
+10 rows selected.
+
+SQL> select * from customer;
+
+      CNUM CNAME                          CITY                               RATING       SNUM
+---------- ------------------------------ ------------------------------ ---------- ----------
+      2001 Hoffman                        London                                100       1001
+      2002 Giovanni                       Rome                                  200       1003
+      2003 Liu                            San Jose                              200       1002
+      2004 Grass                          Berlin                                300       1002
+      2006 Clemens                        London                                100       1001
+      2008 Cisneros                       San Jose                              300       1006
+      2007 Pereira                        Rome                                  100       1004
+
+7 rows selected.
+
+SQL> select * from salespeople;
+
+      SNUM SNAME                          CITY                                 COMM
+---------- ------------------------------ ------------------------------ ----------
+      1001 Peel                           London                                .12
+      1002 Serres                         San Jose                              .13
+      1003 AxelRod                        New York                               .1
+      1004 Motika                         London                                .11
+      1005 Fran                           London                                .26
+      1006 Rifkin                         Barcelona                             .15
+
+6 rows selected.
+
+
+SQL> SELECT s.sname, SUM(o.amt) AS total_sales
+  2  FROM salespeople s
+  3  JOIN customer c ON s.snum = c.snum
+  4  JOIN orders o ON c.cnum = o.cnum
+  5  GROUP BY s.sname
+  6  ORDER BY total_sales DESC
+  7  ;
+
+SNAME                          TOTAL_SALES
+------------------------------ -----------
+Peel                              15382.07
+Serres                              6470.4
+Motika                              1900.1
+AxelRod                            1788.98
+Rifkin                             1116.85
+
+SQL> SELECT s.sname, total_sales
+  2  FROM (
+  3      SELECT s.sname, SUM(o.amt) AS total_sales
+  4      FROM salespeople s
+  5      JOIN customer c ON s.snum = c.snum
+  6      JOIN orders o ON c.cnum = o.cnum
+  7      GROUP BY s.sname
+  8      ORDER BY total_sales DESC
+  9  ) s
+ 10  WHERE ROWNUM = 1;
+
+SNAME                          TOTAL_SALES
+------------------------------ -----------
+Peel                              15382.07
+
+SQL> select count(s.sname),s.sname from salespeople s,customer c where s.snum=c.snum group by s.sname;
+
+COUNT(S.SNAME) SNAME
+-------------- ------------------------------
+             2 Peel
+             1 Motika
+             2 Serres
+             1 AxelRod
+             1 Rifkin
+
+
+SQL> select count(o.cnum),c.cname FROM salespeople s    JOIN customer c ON s.snum = c.snum    JOIN orders o ON c.cnum = o.cnum group by c.cname;
+
+COUNT(O.CNUM) CNAME
+------------- ------------------------------
+            1 Liu
+            1 Hoffman
+            1 Pereira
+            2 Giovanni
+            2 Cisneros
+            2 Clemens
+            1 Grass
+
+7 rows selected.
+
+SQL> SELECT COUNT(o.cnum) AS order_count, c.cname
+  2  FROM salespeople s
+  3  JOIN customer c ON s.snum = c.snum
+  4  JOIN orders o ON c.cnum = o.cnum
+  5  GROUP BY c.cname
+  6  HAVING COUNT(o.cnum) = (
+  7      SELECT MAX(order_count)
+  8      FROM (
+  9          SELECT COUNT(o.cnum) AS order_count
+ 10          FROM salespeople s
+ 11          JOIN customer c ON s.snum = c.snum
+ 12          JOIN orders o ON c.cnum = o.cnum
+ 13          GROUP BY c.cname
+ 14      )
+ 15  );
+
+ORDER_COUNT CNAME
+----------- ------------------------------
+          2 Giovanni
+          2 Cisneros
+          2 Clemens
+
+SQL> select avg(o.cnum),s.sname from salespeople s join customer c on s.snum=c.snum join orders o on c.cnum=o.cnum group by o.cnum,s.sname;
+
+AVG(O.CNUM) SNAME
+----------- ------------------------------
+       2008 Rifkin
+       2007 Motika
+       2003 Serres
+       2006 Peel
+       2004 Serres
+       2001 Peel
+       2002 AxelRod
+
+7 rows selected.
+
+
+SQL> select avg(o.amt),s.sname from salespeople s join customer c on s.snum=c.snum join orders o on c.cnum=o.cnum group by o.cnum,s.sname;
+
+AVG(O.AMT) SNAME
+---------- ------------------------------
+   558.425 Rifkin
+    1900.1 Motika
+   5160.45 Serres
+   7307.44 Peel
+   1309.95 Serres
+    767.19 Peel
+    894.49 AxelRod
+
+7 rows selected.
+
+SQL> SELECT s.city, SUM(o.amt) AS total_sales
+  2  FROM salespeople s
+  3  JOIN customer c ON s.snum = c.snum
+  4  JOIN orders o ON c.cnum = o.cnum
+  5  GROUP BY s.city
+  6  ORDER BY total_sales DESC;
+
+CITY                           TOTAL_SALES
+------------------------------ -----------
+London                            17282.17
+San Jose                            6470.4
+New York                           1788.98
+Barcelona                          1116.85
+
+
+SQL> select s.sname,avg(c.rating) as avg_rating from salespeople s,customer c where s.snum=c.snum group by s.sname;
+
+SNAME                          AVG_RATING
+------------------------------ ----------
+Peel                                  100
+Motika                                100
+Serres                                250
+AxelRod                               200
+Rifkin                                300
+
+
+
+SQL> select (count(distinct o.cnum)/count(c.cnum))*100,s.sname from salespeople s join customer c on s.snum=c.snum join orders o on c.cnum=o.cnum group by o.cnum,s.sname;
+
+(COUNT(DISTINCTO.CNUM)/COUNT(C.CNUM))*100 SNAME
+----------------------------------------- ------------------------------
+                                      100 Peel
+                                       50 AxelRod
+                                      100 Serres
+                                      100 Serres
+                                       50 Peel
+                                      100 Motika
+                                       50 Rifkin
+
+7 rows selected.
+
+SQL> select distinct (count(distinct o.cnum)/count(c.cnum)),s.sname from salespeople s join customer c on s.snum=c.snum join orders o on c.cnum=o.cnum group by o.cnum,s.sname;
+
+(COUNT(DISTINCTO.CNUM)/COUNT(C.CNUM)) SNAME
+------------------------------------- ------------------------------
+                                    1 Motika
+                                   .5 Rifkin
+                                    1 Peel
+                                    1 Serres
+                                   .5 Peel
+                                   .5 AxelRod
+
+6 rows selected.
+
+SQL> SELECT s.sname, (COUNT(DISTINCT CASE WHEN o.cnum IS NOT NULL THEN c.cnum END) / (SELECT COUNT(DISTINCT c2.cnum) FROM customer c2)) * 100 AS percentage_with_orders FROM salespeople s JOIN customer c ON s.snum = c.snum LEFT JOIN orders o ON c.cnum = o.cnum GROUP BY s.sname;
+
+SNAME                          PERCENTAGE_WITH_ORDERS
+------------------------------ ----------------------
+AxelRod                                    14.2857143
+Motika                                     14.2857143
+Peel                                       28.5714286
+Rifkin                                     14.2857143
+Serres                                     28.5714286
+
+
+SQL> select count(o.cnum)/(select count(distinct c2.cnum) from customer c2) *100,s.sname from salespeople s join customer c on s.snum=c.snum join orders o on c.cnum=o.cnum group by s.sname;
+
+COUNT(O.CNUM)/(SELECTCOUNT(DISTINCTC2.CNUM)FROMCUSTOMERC2)*100 SNAME
+-------------------------------------------------------------- ------------------------------
+                                                    42.8571429 Peel
+                                                    14.2857143 Motika
+                                                    28.5714286 Serres
+                                                    28.5714286 AxelRod
+                                                    28.5714286 Rifkin
+
+
+
+SQL> select sum(o.amt),c.cname from customer c join orders o on c.cnum=o.cnum group by c.cname;
+
+SUM(O.AMT) CNAME
+---------- ------------------------------
+   5160.45 Liu
+    767.19 Hoffman
+    1900.1 Pereira
+   1788.98 Giovanni
+   1116.85 Cisneros
+  14614.88 Clemens
+   1309.95 Grass
+
+7 rows selected.
+
+SQL> select c.cname from customer c join orders o on c.cnum=o.cnum where c.cnum not in o.cnum;
+
+no rows selected
+
+SQL> commit;
+
+Commit complete.
